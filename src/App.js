@@ -1,25 +1,42 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
+import Addbook from './Addbook';
 
-function App() {
+function App(props) {
+  const bookQuery = gql`{
+  books{
+    title
+    author
+  }
+}`
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Query query={bookQuery}>
+      {
+        ({ data, loading, error }) => {
+          if (loading)
+            return <div>Fetching</div>
+          if (error)
+            return <div>Error</div>
+          const newData = data.books
+          return (
+            <div>
+              {newData.map((ele, index) => {
+                return (
+                  <div key={index}>
+                    <h2 key={index}>{index}{ele.title}--{ele.author}</h2>
+                  </div>
+                )
+              })}
+              <Addbook />
+            </div>
+          )
+        }
+      }
+    </Query>
+
   );
 }
 
